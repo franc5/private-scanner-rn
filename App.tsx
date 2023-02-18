@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Button, Linking, NativeModules, StyleSheet, Text, View } from 'react-native';
+import { Camera, useCameraDevices } from 'react-native-vision-camera';
 
 import useCameraPermissions from './hooks/use-camera-permissions';
 
@@ -9,8 +10,12 @@ console.log("NativeModules.ImageProcessingModule.sayHello", NativeModules.ImageP
 
 export default function App(): JSX.Element {
   const [cameraPermission] = useCameraPermissions({ autoTriggerPermissionRequest: true });
+  const { back: backCamera } = useCameraDevices(); // TODO: This may throw an exception -> Add Error Boundaries to the app
 
-  if (!cameraPermission || cameraPermission === "not-determined") return (
+  if (
+    (!cameraPermission || cameraPermission === "not-determined")
+    || !backCamera
+  ) return (
     <View style={styles.appContainer}>
       <ActivityIndicator style={styles.loadingSpinner} size="large" color="#1e88e5" />
     </View>
@@ -27,7 +32,7 @@ export default function App(): JSX.Element {
 
   return (
     <View style={styles.appContainer}>
-      <Text>PriveteScanner</Text>
+      <Camera style={styles.cameraPreview} device={backCamera} isActive />
     </View>
   );
 }
@@ -37,6 +42,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   loadingSpinner: {
+    flexGrow: 1,
+  },
+  cameraPreview: {
     flexGrow: 1,
   },
   manuallyGrantPermissionsMessage: {
