@@ -1,12 +1,10 @@
 import React, {useRef, useState} from 'react';
-import { ActivityIndicator, Button, ImageBackground, Linking, NativeModules, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, Linking, StyleSheet, Text, View } from 'react-native';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 
 import useCameraPermissions from './hooks/use-camera-permissions';
 
-// TODO - Remove these lines, they are just here to test our native module
-console.log("NativeModules.ImageProcessingModule", NativeModules.ImageProcessingModule);
-console.log("NativeModules.ImageProcessingModule.sayHello", NativeModules.ImageProcessingModule.sayHello());
+import SheetCornersPicker from './components/SheetCornersPicker';
 
 export default function App(): JSX.Element {
   const cameraRef = useRef<Camera>(null);
@@ -32,11 +30,7 @@ export default function App(): JSX.Element {
     </View>
   );
 
-  if (photoPath) return (
-    <View style={styles.appContainer}>
-      <ImageBackground style={styles.photoPreview} source={{ uri: `file://${photoPath}` }} />
-    </View>
-  );
+  if (photoPath) return <SheetCornersPicker photoPath={`file://${photoPath}`} />;
 
   const capture = async () => {
     if (!cameraRef.current) return; // TODO: Check whether this is possible and consider what to do
@@ -73,9 +67,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   loadingSpinner: {
-    flexGrow: 1,
-  },
-  photoPreview: {
     flexGrow: 1,
   },
   cameraPreview: {
