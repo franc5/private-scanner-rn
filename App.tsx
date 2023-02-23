@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import { ActivityIndicator, Button, Linking, StyleSheet, Text, View } from 'react-native';
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
+import { Camera, PhotoFile, useCameraDevices } from 'react-native-vision-camera';
 
 import useCameraPermissions from './hooks/use-camera-permissions';
 
@@ -10,7 +10,7 @@ export default function App(): JSX.Element {
   const cameraRef = useRef<Camera>(null);
   const [cameraPermission] = useCameraPermissions({ autoTriggerPermissionRequest: true });
   const { back: backCamera } = useCameraDevices(); // TODO: This may throw an exception -> Add Error Boundaries to the app
-  const [photoPath, setPhotoPath] = useState<string>("");
+  const [photo, setPhoto] = useState<PhotoFile | null>(null);
 
   if (
     (!cameraPermission || cameraPermission === "not-determined")
@@ -30,18 +30,18 @@ export default function App(): JSX.Element {
     </View>
   );
 
-  if (photoPath) return <SheetCornersPicker photoPath={`file://${photoPath}`} />;
+  if (photo) return <SheetCornersPicker photo={photo} />;
 
   const capture = async () => {
     if (!cameraRef.current) return; // TODO: Check whether this is possible and consider what to do
 
     try {
-      const { path } = await cameraRef.current.takePhoto({
+      const photo = await cameraRef.current.takePhoto({
         skipMetadata: true,
         enableAutoStabilization: true,
       });
 
-      setPhotoPath(path);
+      setPhoto(photo);
     } catch(error) {
       // TODO: Handle this error
       console.error("Error taking photo", error);

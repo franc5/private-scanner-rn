@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
+import { PhotoFile } from 'react-native-vision-camera';
 
 import ImageProcessingModule from './ImageProcessingModule';
 
 interface Props {
-  photoPath: string;
+  photo: PhotoFile;
 }
 
-export default function SheetCornersPicker({photoPath}: Props) {
+export default function SheetCornersPicker({photo}: Props) {
+  const photoPath = `file://${photo.path}`;
+
   useEffect(() => {
     console.log("NativeModules.ImageProcessingModule.detectSheetCorners", ImageProcessingModule.detectSheetCorners(photoPath));
 
