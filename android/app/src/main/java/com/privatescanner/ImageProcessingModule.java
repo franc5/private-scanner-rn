@@ -103,7 +103,12 @@ public class ImageProcessingModule extends ReactContextBaseJavaModule {
     // TODO: Avoid blocking methods
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String detectSheetCorners(String photoUri) throws IOException {
-        Mat img = loadImage(photoUri);
+        Mat original = loadImage(photoUri);
+
+        // Resize original image to detect corners quicker. It does not affect quality
+        final double scaleFactor = 1 / 0.3;
+        Mat img = new Mat();
+        resize(original, img, new Size(), 1 / scaleFactor, 1 / scaleFactor);
 
         // TODO: Investigate a way to automatically set the threshold and ratio based on the image
         Mat edges = new Mat();
@@ -116,9 +121,9 @@ public class ImageProcessingModule extends ReactContextBaseJavaModule {
 
         // TODO: Return a proper object
         return ""
-                + (int) sheetCorners[0].x + "," + (int) sheetCorners[0].y + ";"
-                + (int) sheetCorners[1].x + "," + (int) sheetCorners[1].y + ";"
-                + (int) sheetCorners[2].x + "," + (int) sheetCorners[2].y + ";"
-                + (int) sheetCorners[3].x + "," + (int) sheetCorners[3].y;
+                + (int) sheetCorners[0].x * scaleFactor + "," + (int) sheetCorners[0].y * scaleFactor + ";"
+                + (int) sheetCorners[1].x * scaleFactor + "," + (int) sheetCorners[1].y * scaleFactor + ";"
+                + (int) sheetCorners[2].x * scaleFactor + "," + (int) sheetCorners[2].y * scaleFactor + ";"
+                + (int) sheetCorners[3].x * scaleFactor + "," + (int) sheetCorners[3].y * scaleFactor;
     }
 }
